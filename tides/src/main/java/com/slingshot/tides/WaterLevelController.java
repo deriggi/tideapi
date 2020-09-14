@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.xml.crypto.Data;
 
@@ -20,7 +21,7 @@ public class WaterLevelController {
 
     @RequestMapping(value = "/waterlevel", method = RequestMethod.GET)
 	public ResponseEntity<?> getWaterLevlels() throws Exception {
-	    return ResponseEntity.ok(DataLoader.getCache());
+	    return ResponseEntity.ok(DataLoader.getCacheTimestamp());
     }
 
 
@@ -30,7 +31,7 @@ public class WaterLevelController {
         StringBuilder sb=  new StringBuilder();
         sb.append(year).append("-").append(month).append("-")
         .append(day).append(" ").append(" ").append(hh).append(":").append(mm);
-
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         WaterLevel wl = new WaterLevel(sdf.parse(sb.toString()), null);
 
         List<WaterLevel> cache = DataLoader.getCacheTimestamp();

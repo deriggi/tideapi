@@ -11,9 +11,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -60,13 +62,14 @@ public class DataLoader {
             for(final JsonElement je: arr){
                 JsonObject jo = je.getAsJsonObject();
                 Date d = sdf.parse(jo.get("t").getAsString());
+                Calendar.getInstance().setTimeZone(TimeZone.getTimeZone("EDT"));
                 Float f = Float.parseFloat(jo.get("v").getAsString());
                 System.out.println(  d.toString() + " - " + f );
                 WaterLevel wl = new WaterLevel(d, f);
                 cache.add(wl);
                 cacheTimestamp.add(wl);
             }
-            Collections.sort(cache, (a, b) -> a.getData().compareTo(b.getData()) );
+            // Collections.sort(cache, (a, b) -> a.getData().compareTo(b.getData()) );
             Collections.sort(cacheTimestamp, (a, b) -> a.getTimeStamp().compareTo(b.getTimeStamp()) );
 
             System.out.println(arr.size() + " is the size of the data list");
