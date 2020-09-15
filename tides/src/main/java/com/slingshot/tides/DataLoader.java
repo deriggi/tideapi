@@ -26,14 +26,18 @@ import com.google.gson.JsonParser;
 public class DataLoader {
     private static List<WaterLevel> cache;
     private static List<WaterLevel> cacheTimestamp;
+    private static Stats stats;
 
-    
     public static  List<WaterLevel> getCache(){
         return cache;
     }
 
     public static  List<WaterLevel> getCacheTimestamp(){
         return cacheTimestamp;
+    }
+
+    public static Stats getStats(){
+        return stats;
     }
 
     static{
@@ -58,21 +62,23 @@ public class DataLoader {
             // System.out.println(res);
             final JsonArray arr = JsonParser.parseString(res).getAsJsonObject().get("data").getAsJsonArray();
             final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             for(final JsonElement je: arr){
                 JsonObject jo = je.getAsJsonObject();
                 Date d = sdf.parse(jo.get("t").getAsString());
-                Calendar.getInstance().setTimeZone(TimeZone.getTimeZone("EDT"));
+                // Calendar.getInstance().setTimeZone(TimeZone.getTimeZone("EDT"));
                 Float f = Float.parseFloat(jo.get("v").getAsString());
-                System.out.println(  d.toString() + " - " + f );
+                // System.out.println(  d.toString() + " - " + f );
                 WaterLevel wl = new WaterLevel(d, f);
                 cache.add(wl);
                 cacheTimestamp.add(wl);
             }
-            // Collections.sort(cache, (a, b) -> a.getData().compareTo(b.getData()) );
+            Collections.sort(cache, (a, b) -> a.getData().compareTo(b.getData()) );
             Collections.sort(cacheTimestamp, (a, b) -> a.getTimeStamp().compareTo(b.getTimeStamp()) );
 
             System.out.println(arr.size() + " is the size of the data list");
+
+            stats = new StatsAnalyzer().analyze(cache);
 
         } catch (IOException  | ParseException | InterruptedException e) {
             // TODO Auto-generated catch block
