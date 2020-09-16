@@ -1,6 +1,7 @@
 package com.slingshot.tides;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
@@ -40,5 +41,22 @@ public class WaterLevelController {
         Integer index = Collections.binarySearch(cache, wl);
 
         return ResponseEntity.ok(cache.get(index));
+    }
+
+    @RequestMapping(value = "/waterlevel/{year}/{month}/{day}/{hh}/{mm}/{numDays}", method = RequestMethod.GET)
+	public ResponseEntity<?> getWaterLevelsRadius(@PathVariable Integer year, @PathVariable Integer month, @PathVariable Integer day, @PathVariable Integer hh, @PathVariable Integer mm, @PathVariable Integer numDays) throws Exception {
+        
+        StringBuilder sb=  new StringBuilder();
+        sb.append(year).append("-").append(month).append("-")
+        .append(day).append(" ").append(" ").append(hh).append(":").append(mm);
+        
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        WaterLevel wl = new WaterLevel(sdf.parse(sb.toString()), null);
+
+        List<WaterLevel> cache = DataLoader.getCacheTimestamp();
+        Integer index = Collections.binarySearch(cache, wl);
+        List<WaterLevel> sublist = cache.subList(index, index + numDays > cache.size()-1? cache.size()-1 : index + numDays );
+    
+        return ResponseEntity.ok(sublist);
     }
 }
