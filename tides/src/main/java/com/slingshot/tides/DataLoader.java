@@ -11,7 +11,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -81,9 +80,7 @@ public class DataLoader {
             stats = new StatsAnalyzer().analyze(cache);
 
         } catch (IOException  | ParseException | InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-            
         }
 
         
