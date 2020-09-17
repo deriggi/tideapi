@@ -23,16 +23,16 @@ import com.google.gson.JsonParser;
 
 
 public class DataLoader {
-    private static List<WaterLevel> cache;
-    private static List<WaterLevel> cacheTimestamp;
+    private static List<WaterLevel> byWaterLevel;
+    private static List<WaterLevel> byTimestamp;
     private static Stats stats;
 
     public static  List<WaterLevel> getCache(){
-        return cache;
+        return byWaterLevel;
     }
 
     public static  List<WaterLevel> getCacheTimestamp(){
-        return cacheTimestamp;
+        return byTimestamp;
     }
 
     public static Stats getStats(){
@@ -50,8 +50,8 @@ public class DataLoader {
                 .timeout(Duration.ofMinutes(1)).header("Content-Type", "application/json").GET().build();
 
         HttpResponse<String> response;
-        cache = new ArrayList<WaterLevel>();
-        cacheTimestamp = new ArrayList<WaterLevel>();
+        byWaterLevel = new ArrayList<WaterLevel>();
+        byTimestamp = new ArrayList<WaterLevel>();
 
 
         try {
@@ -69,15 +69,15 @@ public class DataLoader {
                 Float f = Float.parseFloat(jo.get("v").getAsString());
                 // System.out.println(  d.toString() + " - " + f );
                 WaterLevel wl = new WaterLevel(d, f);
-                cache.add(wl);
-                cacheTimestamp.add(wl);
+                byWaterLevel.add(wl);
+                byTimestamp.add(wl);
             }
-            Collections.sort(cache, (a, b) -> a.getData().compareTo(b.getData()) );
-            Collections.sort(cacheTimestamp, (a, b) -> a.getTimeStamp().compareTo(b.getTimeStamp()) );
+            Collections.sort(byWaterLevel, (a, b) -> a.getData().compareTo(b.getData()) );
+            Collections.sort(byTimestamp, (a, b) -> a.getTimeStamp().compareTo(b.getTimeStamp()) );
 
             System.out.println(arr.size() + " is the size of the data list");
 
-            stats = new StatsAnalyzer().analyze(cache);
+            stats = new StatsAnalyzer().analyze(byWaterLevel, byTimestamp);
 
         } catch (IOException  | ParseException | InterruptedException e) {
             e.printStackTrace();

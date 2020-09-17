@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 public class StatsAnalyzer {
 
-    public Stats analyze(List<WaterLevel> waterLevel){
+    public Stats analyze(List<WaterLevel> waterLevel, List<WaterLevel> byTimestamp ){
         
         Double median = median(waterLevel);
         Double avg = avg(waterLevel);
@@ -17,7 +17,9 @@ public class StatsAnalyzer {
         List<WaterLevel> highOutliers = waterLevel.stream().filter(a -> a.getData() > avg + 1.8*stdv ).collect(Collectors.toList());
         List<WaterLevel> lowOutliers = waterLevel.stream().filter(a -> a.getData() < avg - 1.8*stdv ).collect(Collectors.toList());
 
-        return new Stats(avg, stdv, median, lowOutliers, highOutliers, percentiles);
+        List<WaterLevel> lowSlopePoints = findLowSlopes(byTimestamp);
+
+        return new Stats(avg, stdv, median, lowOutliers, highOutliers, percentiles, lowSlopePoints);
     }
 
     private List<Float> percentiles(List<WaterLevel> waterLevels){
@@ -53,6 +55,21 @@ public class StatsAnalyzer {
 
     private Double avg(List<WaterLevel> waterLevels){
         return sum(waterLevels)/waterLevels.size();
+    }
+
+    private List<WaterLevel> findLowSlopes(List<WaterLevel> waterLevels){
+        final int width = 6;
+        List<WaterLevel> lowSlopePoints = new ArrayList<>();
+        for(int i= 0; i < waterLevels.size() - width; i++){
+            float diff = Math.abs(waterLevels.get(i).getData() - waterLevels.get( i + width ).getData());
+            double avg = avg(waterLevels.subList(i, i+width));
+            double stdev = stdev(waterLevels.subList(i, i+width), avg);
+            if(diff < 0.008 &&  stdev < 0.005){
+                System.out.println(diff + " at\t" + waterLevels.get(i+width/2).getTimeStamp() + " at\t" +  waterLevels.get(i+width/2).getData() + " stdev\t " + stdev);
+                lowSlopePoints.add(waterLevels.get(i+width/2));
+            }
+        }
+        return lowSlopePoints;   
     }
 
     private Double stdev(List<WaterLevel> waterLevels, Double average){

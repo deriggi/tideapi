@@ -10,11 +10,19 @@ public class Stats {
     private Integer lowOutlierCnt;
     private Integer highOutlierCnt;
     private Outliers outliers;
-    
+
+    private List<WaterLevel> pointsOfLowSlope;
     private List<Float> percentiles;
-    public List<Float> getPercentiles(){
+
+    public List<Float> getPercentiles() {
         return this.percentiles;
     }
+
+    public List<WaterLevel> getPointsOfLowSlope() {
+        return pointsOfLowSlope;
+    }
+
+    
 
     public Double getAvg() {
         return avg;
@@ -65,7 +73,7 @@ public class Stats {
         return this.outliers;
     }
 
-    public Stats(Double avg, Double stdv, Double median, List<WaterLevel> lows, List<WaterLevel> highs, List<Float> percentiles) {
+    public Stats(Double avg, Double stdv, Double median, List<WaterLevel> lows, List<WaterLevel> highs, List<Float> percentiles, List<WaterLevel> lowSlopes) {
         this.avg = avg;
         this.stdv = stdv;
         this.median = median;
@@ -73,6 +81,7 @@ public class Stats {
         this.highOutlierCnt = highs.size();
         this.setOutliers(highs, lows);
         this.percentiles = percentiles;
+        this.pointsOfLowSlope = lowSlopes;
     }
 
 

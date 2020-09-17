@@ -45,6 +45,9 @@ public class WaterLevelController {
 
         List<WaterLevel> cache = DataLoader.getCacheTimestamp();
         Integer index = Collections.binarySearch(cache, wl);
+        if(index == cache.size()){
+            return ResponseEntity.notFound().build();
+        }
         List<WaterLevel> sublist = cache.subList(index,
                 index + numDays > cache.size() - 1 ? cache.size() - 1 : index + numDays);
 
