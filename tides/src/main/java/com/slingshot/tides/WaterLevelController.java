@@ -26,6 +26,16 @@ public class WaterLevelController {
         return ResponseEntity.ok(DataLoader.getStats());
     }
 
+    @RequestMapping(value = "/waterlevel/outliers", method = RequestMethod.GET)
+    public ResponseEntity<?> getOutliers() throws Exception {
+        return ResponseEntity.ok(DataLoader.getStats().getOutliers());
+    }
+
+    @RequestMapping(value = "/waterlevel/lowslopes", method = RequestMethod.GET)
+    public ResponseEntity<?> getLowSlopes() throws Exception {
+        return ResponseEntity.ok(DataLoader.getStats().getPointsOfLowSlope());
+    }
+
     @RequestMapping(value = "/waterlevel/{year}/{month}/{day}/{hh}/{mm}", method = RequestMethod.GET)
     public ResponseEntity<?> getWaterLevelAtTime(@PathVariable Integer year, @PathVariable Integer month,
             @PathVariable Integer day, @PathVariable Integer hh, @PathVariable Integer mm) throws Exception {
@@ -36,10 +46,10 @@ public class WaterLevelController {
         return ResponseEntity.ok(cache.get(index));
     }
 
-    @RequestMapping(value = "/waterlevel/{year}/{month}/{day}/{hh}/{mm}/{numDays}", method = RequestMethod.GET)
+    @RequestMapping(value = "/waterlevel/{year}/{month}/{day}/{hh}/{mm}/{width}", method = RequestMethod.GET)
     public ResponseEntity<?> getWaterLevelsRadius(@PathVariable Integer year, @PathVariable Integer month,
             @PathVariable Integer day, @PathVariable Integer hh, @PathVariable Integer mm,
-            @PathVariable Integer numDays) throws Exception {
+            @PathVariable Integer width) throws Exception {
 
         WaterLevel wl = fromDate(year, month, day, hh, mm);
 
@@ -49,7 +59,7 @@ public class WaterLevelController {
             return ResponseEntity.notFound().build();
         }
         List<WaterLevel> sublist = cache.subList(index,
-                index + numDays > cache.size() - 1 ? cache.size() - 1 : index + numDays);
+                index + width > cache.size() - 1 ? cache.size() - 1 : index + width);
 
         return ResponseEntity.ok(sublist);
     }
